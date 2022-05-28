@@ -10,6 +10,13 @@ class Drug(models.Model):
         max_length=50, unique=True
     )
 
+    class Meta:
+        verbose_name = 'Препарат'
+        verbose_name_plural = 'Препараты'
+
+    def __str__(self):
+        return f'{self.name}'
+
 
 class Box(models.Model):
 
@@ -39,6 +46,9 @@ class Box(models.Model):
             )
         ]
 
+    def __str__(self):
+        return f'{self.name}, {self.author}'
+
 
 class DrugBox(models.Model):
 
@@ -47,7 +57,7 @@ class DrugBox(models.Model):
     AMPOULE = 'ампулы'
     PILLS = 'таблетки'
     UNITS = (
-        ('pieces', PIECES ),
+        ('pieces', PIECES),
         ('milliliter', MILLILITER),
         ('ampoule', AMPOULE),
         ('pills', PILLS)
@@ -55,13 +65,15 @@ class DrugBox(models.Model):
 
     box = models.ForeignKey(
         Box, on_delete=models.CASCADE,
-        related_name='drugs_in_box'
+        related_name='drugs_in_box',
+        verbose_name='Бокс'
     )
     drug = models.ForeignKey(
         Drug, on_delete=models.CASCADE,
-        related_name='drugs_in_box'
+        related_name='drugs_in_box',
+        verbose_name='Препарат'
     )
-    expiration_date = models.DateField()
+    expiration_date = models.DateField(verbose_name='Срок годности')
     amount = models.PositiveIntegerField(verbose_name='Количество')
     unit = models.CharField(
         verbose_name='Единица измерения',
@@ -70,7 +82,7 @@ class DrugBox(models.Model):
     )
 
     class Meta:
-        ordering = ('drug__name',)
+        ordering = ('box',)
         verbose_name = 'Лекарство в боксе'
         verbose_name_plural = 'Лекарства в боксе'
         constraints = [
@@ -79,3 +91,6 @@ class DrugBox(models.Model):
                 name='unique_drug_in_box'
             )
         ]
+
+    def __str__(self):
+        return f'{self.box.name}, {self.drug}'
